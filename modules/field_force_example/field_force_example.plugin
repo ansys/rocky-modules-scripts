@@ -1,0 +1,13 @@
+[Core]
+Name = Field Force
+Module = field_force_example
+
+[Documentation]
+Author = Ansys (Example)
+Version = 1.0.0
+Website = ansys.com
+Description = Enables you to specify the name of the Point 
+	Cloud that was already defined with an imported force 
+	field .txt file, which will then be used as an additional 
+	body force acting on particles.
+    It can be used as an example of Solver SDK usage.

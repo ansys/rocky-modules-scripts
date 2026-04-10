@@ -1,0 +1,11 @@
+[Core]
+Name = Compression Motion
+Module = compression_motion
+
+[Documentation]
+Author = Ansys (Example)
+Version = 1.0.0
+Website = ansys.com
+Description = This module enables you to implement a
+    compression motion. The motion will be
+    reverted when the maximum force is reached.

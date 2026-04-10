@@ -1,0 +1,12 @@
+[Core]
+Name = Motion Frame
+Module = motion_frame
+
+[Documentation]
+Author = Ansys (Example)
+Version = 1.0.0
+Website = ansys.com
+Description = Enables you to define a translation 
+	or rotation motion to be applied to the 
+	gravity center of geometry.	It can be 
+	used as an example of Solver SDK usage.

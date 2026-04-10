@@ -1,0 +1,12 @@
+[Core]
+Name = Contact Curves
+Module = contact_curves
+
+[Documentation]
+Author = Ansys (Example)
+Version = 1.0.0
+Website = ansys.com
+Description = Enables Rocky to create additional 
+    Contact Frequency and Contact Number 
+    curves for both Geometries and Particles. 
+    It can be used as an example of Solver SDK usage.

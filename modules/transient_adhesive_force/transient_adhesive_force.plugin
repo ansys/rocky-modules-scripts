@@ -1,0 +1,11 @@
+[Core]
+Name = Transient Adhesive Force
+Module = transient_adhesive_force
+[Documentation]
+Author = Ansys (Example)
+Version = 2.0.0
+Website = ansys.com
+Description = Enables you to use a Transient Adhesive Force 
+	model that will increase over time the adhesive forces 
+	between particles and between particles and boundaries.
+    It can be used as an example of Solver SDK usage.
