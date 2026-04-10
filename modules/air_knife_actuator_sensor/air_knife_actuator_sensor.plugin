@@ -1,0 +1,15 @@
+[Core]
+Name = Air Knife Actuator Sensor
+Module = air_knife_actuator_sensor
+
+[Documentation]
+Author = Ansys (Example)
+Version = 1.0.0
+Website = ansys.com
+Description = This module enables you to define a sensor 
+	through a region of interest and link it with 
+	a 1-way CFD coupling using the fluid velocity 
+	field that has been imported into Rocky as a 
+	Point Cloud. The flow field activation/
+	deactivation will be controlled by the sensor.
+

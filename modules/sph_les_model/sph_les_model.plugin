@@ -1,0 +1,12 @@
+[Core]
+Name = SPH LES Turbulence Model
+Module = sph_les_model
+
+[Documentation]
+Author = Ansys (Example)
+Version = 1.0.0
+Website = ansys.com
+Description = This module re-implements the SPH turbulence
+	model (LES), the viscosity model Morris and the Free Slip
+	boundary type that come by default with Rocky. 
+	It can be used as an example of Solver SDK usage.

@@ -1,0 +1,12 @@
+[Core]
+Name = Spherical Region
+Module = spherical_region
+
+[Documentation]
+Author = Ansys (Example)
+Version = 1.0.0
+Website = ansys.com
+Description = Enables you to define a spherical region 
+	and then mark particles inside of it for later 
+	analysis. It can be used as an example 
+    of Solver SDK usage.

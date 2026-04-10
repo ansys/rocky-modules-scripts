@@ -1,0 +1,11 @@
+[Core]
+Name = Transient Size Scale
+Module = transient_size_scale
+[Documentation]
+Author = Ansys (Example)
+Version = 1.1.0
+Website = ansys.com
+Description = Enables you to use a Transient Size Scale to 
+	increase the particle volume and mass over the 
+	predefined time interval. It can be used as 
+    an example of Solver SDK usage.

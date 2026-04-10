@@ -1,0 +1,11 @@
+[Core]
+Name = SPH Spray Nozzle (Beta)
+Module = sph_spray_nozzle
+
+[Documentation]
+Author = Ansys (Example)
+Version = 1.0.0
+Website = ansys.com
+Description = Applies an acceleration to SPH Elements Inside an ROI
+    to generate some scattering in order to mimic a spray nozzle.
+    

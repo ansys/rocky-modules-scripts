@@ -1,0 +1,12 @@
+[Core]
+Name = Geometry Actuator Sensor
+Module = geometry_actuator_sensor
+
+[Documentation]
+Author = Ansys (Example)
+Version = 1.0.0
+Website = ansys.com
+Description = This module enables you to implement a Sensor
+    through a Region of Interest and an actuator 
+    motion. The motion of the Actuator geometry 
+    will be controlled by the sensor.
