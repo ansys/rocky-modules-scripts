@@ -1,8 +1,8 @@
-# **Ansys Rocky™** / **Ansys Freeflow™** PrePost scripts & modules
+# **Ansys Rocky™** PrePost scripts & modules
 
 ## PrePost scripts
 
-**PrePost scripts** are a powerful tool in **Ansys Rocky™** and **Ansys Freeflow™**, enabling users to automate and customize tasks such as model setup, data post-processing, and results analysis.
+**PrePost scripts** are a powerful tool in **Ansys Rocky™**, enabling users to automate and customize tasks such as model setup, data post-processing, and results analysis.
 
 ### **[How to Save and Run a Script](https://ansyshelp.ansys.com/public/account/secured?returnurl=/Views/Secured/corp/v261/en/dem_scripts/ch02s01.html)**
 
@@ -19,11 +19,6 @@
 9. [Export SPH Information](https://ansyshelp.ansys.com/public//Views/Secured/corp/v261/en/dem_scripts/ch08s09.html)
 10. [Export Particle Time Selection Information](https://ansyshelp.ansys.com/public//Views/Secured/corp/v261/en/dem_scripts/ch08s05.html)
 
-### Available Ansys Freeflow scripts
-
-1. [Setup Basic SPH Project](https://ansyshelp.ansys.com/public//Views/Secured/corp/v261/en/dem_scripts/ch08s03.html)
-2. [Export Boundary Information](https://ansyshelp.ansys.com/public//Views/Secured/corp/v261/en/dem_scripts/section_pvr_2n3_ccc.html)
-3. [Export SPH Information](https://ansyshelp.ansys.com/public//Views/Secured/corp/v261/en/dem_scripts/ch08s09.html)
 
 **The scripts are created using the PrePost Scripting tool:**
 
@@ -64,7 +59,7 @@ Verified with Ansys 2026R1.
 This content is maintained by the Ansys Rocky team. For any support, please contact the project lead, [Jackson Gomes](https://github.com/jacksongomesdasilva).
 
 ### Usage
-``scripts`` and ``modules`` are intended to be executed inside Rocky/Freeflow environment.
+``scripts`` and ``modules`` are intended to be executed inside Rockyenvironment.
 
 ### License
 See LICENSE file for details.
