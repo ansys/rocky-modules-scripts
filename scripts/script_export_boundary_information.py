@@ -63,10 +63,12 @@ def write_cell_gf_for_timestep(geometry, cell_grid_functions, case_file, time_st
 
 def write_node_gf_for_timestep(geometry, nodal_grid_functions, case_file, time_step):
     # write the desired grid functions for the given time step in a certain case file,
-    # as well as the corresponding node global coordinates
-    number_of_nodes = geometry.GetNumberOfNodes()
-    nodes_position = geometry.GetGeometry().GetRawPoints().AsNumPyArray()
-    position_array = nodes_position.reshape((number_of_nodes,3))
+    # as well as the corresponding node coordinates at that same time step
+    number_of_nodes = geometry.GetNumberOfNodes(time_step)
+    x = geometry.GetGridFunction("Coordinate : Nodal : X").GetArray(time_step=time_step)
+    y = geometry.GetGridFunction("Coordinate : Nodal : Y").GetArray(time_step=time_step)
+    z = geometry.GetGridFunction("Coordinate : Nodal : Z").GetArray(time_step=time_step)
+    position_array = numpy.column_stack((x, y, z)).reshape((number_of_nodes, 3))
     nodes_array = (numpy.arange(number_of_nodes, dtype=numpy.int32)).reshape((number_of_nodes,1))
     data_array = numpy.hstack((nodes_array, position_array))
     
