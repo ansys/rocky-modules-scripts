@@ -11,8 +11,8 @@ all outputs or one file per output.
 
 @author: Ansys
 @script_id:script_export_particle_properties
-@version: 1.1.0
-@date: 04 - 2022
+@version: 1.1.1
+@date: 09 - 2026
 '''
 from __future__ import absolute_import, division, print_function, unicode_literals
 import numpy
@@ -24,11 +24,6 @@ from enum import IntEnum
 AUTOFILL_ENV_VAR = "ROCKY_SCRIPTS_AUTOFILL"
 AUTOFILL_ENABLED_VALUE = "1"
 PARTICLE_DATA_FOLDER = "particle-data"
-
-
-class OutputFileMode(IntEnum):
-    SINGLE_FILE = 0
-    ONE_FILE_PER_OUTPUT = 2
 
     
 # auxiliary functions
@@ -129,7 +124,7 @@ def export_particle_information(input_dict):
         return
     #Getting grid functions list
     filtered_names = input_dict['selected_properties_list']
-    multiple_files = input_dict['one_file_per_output'] == OutputFileMode.ONE_FILE_PER_OUTPUT
+    multiple_files = input_dict['one_file_per_output']
     time_start = int(input_dict['initial_time'].split(":")[0])
     time_stop = int(input_dict['final_time'].split(":")[0])
 
@@ -277,7 +272,7 @@ class MainWindow(QMainWindow):
             if self.listWidget.item(index).checkState() == Qt.CheckState.Checked:
                 self.checked_items.append(self.listWidget.item(index).text())
         self.output_dict['selected_properties_list'] = self.checked_items
-        self.output_dict['one_file_per_output'] = self.one_file_per_output.checkState()
+        self.output_dict['one_file_per_output'] = self.one_file_per_output.isChecked()
         self.output_dict['initial_time'] = self.initial_time.currentText()
         self.output_dict['final_time'] = self.final_time.currentText()
         self.output_dict['inputs_defined'] = True
@@ -300,7 +295,7 @@ input_dict = {'inputs_defined': False}
 if os.environ.get(AUTOFILL_ENV_VAR, "0") == AUTOFILL_ENABLED_VALUE:
     # Defaults: select all properties, single file, full time range
     input_dict['selected_properties_list'] = list(gflist)
-    input_dict['one_file_per_output'] = OutputFileMode.SINGLE_FILE
+    input_dict['one_file_per_output'] = False
     input_dict['initial_time'] = f"0: {time_array[0]}s"
     input_dict['final_time'] = f"{len(time_array)-1}: {time_array[-1]}s"
     input_dict['inputs_defined'] = True
