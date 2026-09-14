@@ -25,11 +25,6 @@ AUTOFILL_ENV_VAR = "ROCKY_SCRIPTS_AUTOFILL"
 AUTOFILL_ENABLED_VALUE = "1"
 PARTICLE_DATA_FOLDER = "particle-data"
 
-
-# class OutputFileMode(IntEnum):
-#     SINGLE_FILE = 0
-#     ONE_FILE_PER_OUTPUT = 2
-
     
 # auxiliary functions
 
