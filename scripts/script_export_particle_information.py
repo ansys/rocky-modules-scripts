@@ -3,7 +3,7 @@ Warning: Changes in this file may not be correctly interpreted later on in the s
 
 Generated script file.
 
-Name for generated for script: Export particle information
+Name for generated for script: Export Particle Information
 
 Script description: Script to export particle information.
 For selected time range, exports the selected variables in a single file containing
@@ -16,9 +16,7 @@ all outputs or one file per output.
 '''
 from __future__ import absolute_import, division, print_function, unicode_literals
 import numpy
-import time
 import os
-from enum import IntEnum
 
 
 AUTOFILL_ENV_VAR = "ROCKY_SCRIPTS_AUTOFILL"
@@ -26,7 +24,7 @@ AUTOFILL_ENABLED_VALUE = "1"
 PARTICLE_DATA_FOLDER = "particle-data"
 
     
-# auxiliary functions
+# Auxiliary functions
 
 def get_project_filename_and_create_folder(project, folder_name):
     # Getting project filename and creating a folder to save files 
@@ -42,36 +40,17 @@ def get_project_filename_and_create_folder(project, folder_name):
     if not os.path.exists(data_folder_path):
         os.mkdir(data_folder_path)  
         
-    return (base_file_name, data_folder_path)
-
-def get_selected_gf_names(filtered_names, particles):
-    grid_function_names = []
-        # get the arrays for the selected properties
-    for j in filtered_names:
-        gf = particles.GetGridFunction(j).GetArray()
-        
-        # checking if the grid function has more than 1 component or not
-        if isinstance(gf[0], numpy.ndarray):
-            number_elements = gf.shape[1]
-            for k in range(number_elements):
-                grid_function_names.append(j+"[" + str(k)+"]")
-            
-        elif isinstance(gf[0], numpy.int32) or isinstance(gf[0], numpy.float64)  or isinstance(gf[0], numpy.float32):
-            grid_function_names.append(j)
-            
-        else:
-            print('Error!! - cannot recognize the grid function type')
-    return grid_function_names       
+    return (base_file_name, data_folder_path)    
 
 def write_gf_for_timestep(particles, filtered_names, case_file, time_step):
-    # writes the desired quantities looping in the number of particles 
+    # Writes the desired quantities looping in the number of particles 
     number_particles = particles.GetNumberOfParticles(time_step)       
     for i in range(number_particles):
         values = []
         for j in filtered_names:          
             gf = particles.GetGridFunction(j).GetArray(time_step=time_step)
             if gf is not None:
-                # checking if the grid function has more than 1 component or not
+                # Checking if the grid function has more than 1 component or not
                 if isinstance(gf[i], numpy.ndarray):
                     number_elements = gf.shape[1]
                     for k in range(number_elements):
@@ -88,14 +67,14 @@ def write_gf_for_timestep(particles, filtered_names, case_file, time_step):
        
     
 def export_particle_information(input_dict):
-    #This is the main function
+    # This is the main function
     
     # Checking if a project is opened
     project = api.GetProject()
     if project is None:
-        Message = [(None, '<b>Information</b>: There is no project opened. Please open a project before running this script.')]
+        message = [(None, '<b>Information</b>: There is no project opened. Please open a project before running this script.')]
     
-        print("result:", fedit(Message, title="Error message"))
+        print("Result:", fedit(message, title="Error message"))
         return                           
     
     # Getting study    
@@ -104,44 +83,44 @@ def export_particle_information(input_dict):
     
     # Checking if the case has results
     if not study.HasResults():
-        Message = [(None, '<b>Information</b>: There are no results in this project. Please run the project before exporting particle information.')]
+        message = [(None, '<b>Information</b>: There are no results in this project. Please run the project before exporting particle information.')]
 
-        print("result:", fedit(Message, title="Error message"))                          
+        print("Result:", fedit(message, title="Error message"))                          
         return   
     
-    #checking project path and creating a new folder to save files
+    # Checking project path and creating a new folder to save files
     folder_name = PARTICLE_DATA_FOLDER
     base_file_name, data_folder_path = get_project_filename_and_create_folder(project, folder_name)
     
-    # getting time array
+    # Getting time array
     time_array = timeset.GetValues()
-    #getting particles
+    # Getting particles
     particles = study.GetParticles()
        
-    #Dealing with the case that the user has pressed Cancel after running the script
+    # Dealing with the case that the user has pressed Cancel after running the script
     if input_dict is None:
         print("Script canceled")
         return
-    #Getting grid functions list
+    # Getting grid functions list
     filtered_names = input_dict['selected_properties_list']
     multiple_files = input_dict['one_file_per_output']
     time_start = int(input_dict['initial_time'].split(":")[0])
     time_stop = int(input_dict['final_time'].split(":")[0])
 
-    # dealing with the case the user has set final time < initial time
+    # Dealing with the case the user has set final time < initial time
     if (time_start > time_stop):
-        Message = [(None, '<b>Information</b>: Final time is smaller then initial time. Please correct the order.')]
+        message = [(None, '<b>Information</b>: Final time is smaller then initial time. Please correct the order.')]
 
-        print("result:", fedit(Message, title="Error message")) 
+        print("Result:", fedit(message, title="Error message")) 
         return
     
-    #Checking if at least one property was selected. If not, warn user
+    # Checking if at least one property was selected. If not, warn user
     gf_selected = [i for i, x in enumerate(filtered_names) if x is not False]
     
     if (gf_selected == []):
-        Message = [(None, '<b>Information</b>: No property was selected for exporting. Please select at least one property to export.')]
+        message = [(None, '<b>Information</b>: No property was selected for exporting. Please select at least one property to export.')]
 
-        print("result:", fedit(Message, title="Error message")) 
+        print("Result:", fedit(message, title="Error message")) 
         return     
     
     # Moving to first time step with particle to check the len of the property
@@ -150,40 +129,37 @@ def export_particle_information(input_dict):
         particle_number = particles.GetNumberOfNodes(time_step)
         if particle_number > 0:
             first_time_with_particles = time_step
-            print("first_time_with_particles", first_time_with_particles)
+            print(f"First output with particles: {first_time_with_particles} s")
             break
+    
     # If there are no particles in any time step, warn the user
     if first_time_with_particles == -1:
-        Message = [(None, '<b>Information</b>: There are no particles in the selected time range. Please select a time range that contains particles.')]
+        message = [(None, '<b>Information</b>: There are no particles in the selected time range. Please select a time range that contains particles.')]
 
-        print("result:", fedit(Message, title="Error message"))
+        print("Result:", fedit(message, title="Error message"))
         return
                
     app.GoToTimeStep(first_time_with_particles)
 
-    #Getting grid function names
-    grid_function_names = filtered_names#= get_selected_gf_names(filtered_names, particles)
+    # Getting grid function names
+    grid_function_names = filtered_names
       
-    # case the user has selected only a single file
+    # Case the user has selected only a single file
     if not multiple_files:
-        # create the file
+        # Create the file
         base_file_name_time_step = base_file_name + '.csv'
-        case_file = open(os.path.join(data_folder_path, base_file_name_time_step), 'w')
-                       
-        #writing the file header with the grid functions names
-        case_file.write(",".join(grid_function_names))
-        case_file.write("\n" )
-        
-        # Now moving to the next time step and writing its value in the file
-        for time_step in range(time_start, time_stop+1):
-            app.GoToTimeStep(time_step)
+        with open(os.path.join(data_folder_path, base_file_name_time_step),'w') as case_file:
 
-            case_file.write("time (s) = %s" % time_array[time_step])
-            case_file.write("\n" )
-            
-            write_gf_for_timestep(particles, filtered_names, case_file, time_step)
-            
-        case_file.close()
+            case_file.write(",".join(grid_function_names))
+            case_file.write("\n")
+
+            for time_step in range(time_start, time_stop + 1):
+                app.GoToTimeStep(time_step)
+
+                case_file.write("time (s) = %s" % time_array[time_step])
+                case_file.write("\n")
+
+                write_gf_for_timestep(particles, filtered_names, case_file, time_step)
         
     # Now treating the case where the user asked for 1 file per output         
     if multiple_files:
@@ -205,8 +181,7 @@ def export_particle_information(input_dict):
 
 
 
-
-from PyQt6.QtCore import QDate, QSize, Qt, QCoreApplication
+from PyQt6.QtCore import Qt
 from PyQt6.QtGui import *
 from PyQt6.QtWidgets import *
 
@@ -306,4 +281,4 @@ if input_dict['inputs_defined']:
     export_particle_information(input_dict)
 else:
     Message = [(None, '<b>Information</b>: Script canceled by the user.')]
-    print("result:", fedit(Message, title="Error message"))
+    print("Result:", fedit(Message, title="Error message"))
