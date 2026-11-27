@@ -9,13 +9,11 @@ Name for generated for script: Export Boundary Information
 @version: 1.4.0
 @date: 10 - 2024
 '''
-from math import cos, sin
+
 import numpy
-import time
 import os
-import sys
 from enum import Enum
-from PyQt6.QtWidgets import QApplication, QScrollArea, QWidget, QVBoxLayout, QCheckBox, QLabel, QPushButton, QDialog, QComboBox, QMessageBox
+from PyQt6.QtWidgets import QScrollArea, QWidget, QVBoxLayout, QCheckBox, QLabel, QPushButton, QDialog, QComboBox, QMessageBox
 
 
 AUTOFILL_ENV_VAR = "ROCKY_SCRIPTS_AUTOFILL"
@@ -45,7 +43,7 @@ def get_project_filename_and_create_folder(project, folder_name):
     return (base_file_name, data_folder_path)
 
 def write_cell_gf_for_timestep(geometry, cell_grid_functions, case_file, time_step):
-    # write the desired grid functions for the given time step in a certain case file,
+    # Write the desired grid functions for the given time step in a certain case file,
     # as well as the corresponding triangle center global coordinates
     number_triangles = geometry.GetNumberOfCells(time_step=time_step) 
     position_array = geometry.GetCellCenterAsArray().reshape((number_triangles,3))
@@ -62,7 +60,7 @@ def write_cell_gf_for_timestep(geometry, cell_grid_functions, case_file, time_st
 
 
 def write_node_gf_for_timestep(geometry, nodal_grid_functions, case_file, time_step):
-    # write the desired grid functions for the given time step in a certain case file,
+    # Write the desired grid functions for the given time step in a certain case file,
     # as well as the corresponding node coordinates at that same time step
     number_of_nodes = geometry.GetNumberOfNodes(time_step)
     x = geometry.GetGridFunction("Coordinate : Nodal : X").GetArray(time_step=time_step)
@@ -81,14 +79,10 @@ def write_node_gf_for_timestep(geometry, nodal_grid_functions, case_file, time_s
     numpy.savetxt(case_file, data_array, fmt=fmt)
 
 
-st = time.time()
-
-
 def export_boundary_information():
     def check_project_and_show_error():
         project = api.GetProject()
-        if project is None:
-            qt_app = QApplication.instance() or QApplication(sys.argv)            
+        if project is None:          
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setText('<b>Information</b>: There is no project opened. Please open a project before running this script.')
@@ -106,8 +100,7 @@ def export_boundary_information():
     timeset = study.GetTimeSet()
 
     def check_results_and_show_error(study):
-        if not study.HasResults():
-            qt_app = QApplication.instance() or QApplication(sys.argv)            
+        if not study.HasResults():           
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setText('<b>Information</b>: There are no results in this project. Please run the project before exporting boundary information.')
@@ -120,11 +113,11 @@ def export_boundary_information():
     if not check_results_and_show_error(study):
         return
 
-    #checking project path and creating a new folder to save files
+    # Checking project path and creating a new folder to save files
     folder_name = GEOMETRY_DATA_FOLDER
     base_file_name, data_folder_path = get_project_filename_and_create_folder(project, folder_name)
     
-    # getting time array
+    # Getting time array
     time_array = timeset.GetValues()
 
     # List of geometries
@@ -147,11 +140,6 @@ def export_boundary_information():
 
 
     selected_geometry = collection.GetGeometry(selected_geometry_name)
-
-
-    # Getting the selected geometry
-    # selected_geometry_name = geometries[result_geom[0]]
-    # selected_geometry = collection.GetGeometry(selected_geometry_name)
 
     # Getting grid functions list
     gflist = selected_geometry.GetGridFunctionNames()
@@ -177,11 +165,10 @@ def export_boundary_information():
     time_start = result2[1]
     time_stop = result2[2]
 
-    # dealing with the case the user has set final time < initial time
+    # Dealing with the case the user has set final time < initial time
     def check_time_and_show_error(time_start, time_stop):
         # Check if the final time is smaller than the initial time
-        if time_start > time_stop:
-            qt_app = QApplication.instance() or QApplication(sys.argv)          
+        if time_start > time_stop:         
             msg = QMessageBox()
             msg.setIcon(QMessageBox.Icon.Information)
             msg.setText('<b>Information</b>: Final time is smaller than initial time. Please correct the order.')
@@ -195,8 +182,7 @@ def export_boundary_information():
         return
 
     gf_selected = [i for i, x in enumerate(result2[3:]) if x]
-    if not gf_selected:
-        qt_app = QApplication.instance() or QApplication(sys.argv)      
+    if not gf_selected:      
         msg = QMessageBox()
         msg.setIcon(QMessageBox.Icon.Information)
         msg.setText('<b>Information</b>: No property was selected for exporting. Please select at least one property.')
@@ -205,10 +191,13 @@ def export_boundary_information():
         msg.exec()
         return
 
-    #getting geometry name chosen by the user
+    # Getting geometry name chosen by the user
     geom = collection.GetGeometry(selected_geometry_name)
     filtered_names = [gflist[i] for i in gf_selected]
 
+    # Separate the selected grid functions according to their location.
+    # Cell-based quantities are exported using triangle centers,
+    # while nodal quantities are exported using node coordinates.
     cell_grid_functions = [
         i
         for i in filtered_names
@@ -265,8 +254,7 @@ def export_boundary_information():
                     f.write("\n")
 
 
-def create_scrollable_list(asklist, width=400, height=200):
-    qt_app = QApplication.instance() or QApplication(sys.argv)    
+def create_scrollable_list(asklist, width=400, height=200):   
     window = QDialog()
     window.setWindowTitle('Export details')
     layout = QVBoxLayout()

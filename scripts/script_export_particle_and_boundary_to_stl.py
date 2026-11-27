@@ -18,19 +18,12 @@ Script description:
 from __future__ import absolute_import, division, print_function, unicode_literals
 from esss_qt10.qt_traits.process_events import ProcessEvents
 import numpy
-import math
 import time
 import os
-import io
 from six.moves import range
 import struct
 from enum import Enum
-
-from PyQt6.QtWidgets import (
-    QApplication, QDialog, QVBoxLayout, QLabel, QComboBox, QDoubleSpinBox,
-    QPushButton
-)
-from PyQt6.QtCore import Qt
+from PyQt6.QtWidgets import (QApplication, QDialog, QVBoxLayout, QLabel, QComboBox, QDoubleSpinBox, QPushButton)
 
 facet_dtype = {
     'names': ['normals', 'x', 'y', 'z', 'attr'],
@@ -54,7 +47,7 @@ FILTERED_GEOMETRY_CLASSES = {
     'CubeProcessSubject',
 }
  
-# auxiliary functions
+# Auxiliary functions
 
 def get_project_filename_and_create_folder(project, folder_name):
     # Getting project filename and creating a folder to save files 
@@ -73,30 +66,29 @@ def get_project_filename_and_create_folder(project, folder_name):
     return (base_file_name, data_folder_path)
 
 def export_particles_stl(study, data_folder_path):
-    # exporting the particle stl of all particle groups
+    # Exporting the particle stl of all particle groups
     particle_collection = study.GetParticleCollection()
 
-    # creating list to store particle names
+    # Creating list to store particle names
     file_names = []
-    # creating list to store the reference particle size from the STL export.
+    # Creating list to store the reference particle size from the STL export.
     # This is used to scale particles from their sieve size to actual runtime size
     particle_reference_sizes = []
     for i in range(len(particle_collection)):
-        # getting particle
+
         particle = particle_collection[i]
 
-        # getting particle reference size from size distribution
+        # Getting particle reference size from size distribution
         particle_info = particle.GetSubject().GetInfo()
         particle_scale = particle_info.size_scale
         size_distribution_list = particle.GetSizeDistributionList()
-        size_scale = size_distribution_list[0].GetScaleFactor()
         reference_size = size_distribution_list[0].GetSize()
         
         # The reference size is always the characteristic size from the distribution
         # regardless of whether it's sieve size or equivalent diameter
         particle_reference_sizes.append(reference_size * particle_scale)
 
-        # exporting particle
+        # Exporting particle
         toolkit = study.GetExportToolkit()
         file_name=os.path.join(data_folder_path, "particle"+str(i))
         file_names.append(file_name+".stl")
@@ -105,11 +97,10 @@ def export_particles_stl(study, data_folder_path):
     return file_names, particle_reference_sizes
 
 def export_geometry_stl(study, geometry__names_list, data_folder_path):
-    # exporting the geometry parts as stl file
+    # Exporting the geometry parts as stl file
     geometry_collection = study.GetGeometryCollection()
     file_names = []
     toolkit = study.GetExportToolkit()
-    print(geometry__names_list)
     for i, p in enumerate(geometry__names_list):
         geom = geometry_collection.GetGeometry(p)
         if (str(type(geom)).find('surface') <= 0):
@@ -120,13 +111,12 @@ def export_geometry_stl(study, geometry__names_list, data_folder_path):
     return file_names
 
 def read_binary_stl(stl_name):
-    #reading the binary stl to get the normals and vertex
+    # Reading the binary stl to get the normals and vertex
 
     stl_file = open(stl_name, "rb")
     head = stl_file.read(80)
     nbtriangles=stl_file.read(4)
     number_of_triangles=struct.unpack("<I", nbtriangles)[0]
-    # print(number_of_triangles)
 
     record_dtype = numpy.dtype([
         ('Normals', numpy.float32, (3,)),
@@ -148,10 +138,6 @@ def read_binary_stl(stl_name):
 
     return(Normals, Vertex1, Vertex2, Vertex3)
 
-#from itertools import izip
-
-
-
 def rotation_matrix(orientation_vetor, orientation_angle):
     from math import sqrt, cos, sin
     # Normalizing base vector
@@ -164,7 +150,6 @@ def rotation_matrix(orientation_vetor, orientation_angle):
     x /= module
     y /= module
     z /= module
-    #ang = math.radians(orientation_angle)
     ang = (orientation_angle)
     c = cos(ang)
     s = sin(ang)
@@ -181,12 +166,10 @@ def rotate_particle(normal, vertex1, vertex2, vertex3, rotation_matrix):
     rotated_vertex1 = numpy.matmul(rotation_matrix, vertex1.transpose()).transpose()
     rotated_vertex2 = numpy.matmul(rotation_matrix, vertex2.transpose()).transpose()
     rotated_vertex3 = numpy.matmul(rotation_matrix, vertex3.transpose()).transpose()
-    #print(rotated_normal)
     return (rotated_normal, rotated_vertex1, rotated_vertex2, rotated_vertex3)
 
 def position_particle(normal, vertex1, vertex2, vertex3, x, y, z):
     position = numpy.array([x, y, z])
-    # print("position", position)
 
     translated_vertex1 = vertex1 + position
     translated_vertex2 = vertex2 + position
@@ -272,14 +255,14 @@ def dialog(project, time_array):
 
 
 def export_particles():
-    #This is the main function
+    # This is the main function
 
     # Checking if a project is opened
     project = api.GetProject()
     if project is None:
         Message = [(None, '<b>Information</b>: There is no project opened. Please open a project before running this macro.')]
 
-        print("result:", fedit(Message, title="Error message"))
+        print("Result:", fedit(Message, title="Error message"))
         return   
 
     # Getting study                           
@@ -290,27 +273,27 @@ def export_particles():
     if not study.HasResults():
         Message = [(None, '<b>Information</b>: There are no results in this project. Please run the project before exporting particle information.')]
 
-        print("result:", fedit(Message, title="Error message"))                          
+        print("Result:", fedit(Message, title="Error message"))                          
         return   
     
-    # checking if the project has multi-component particles
+    # Checking if the project has multi-component particles
     particle_collection = study.GetParticleCollection()
     particles = study.GetParticles()
     for particle in particle_collection:
         if particle.GetFlexible():
             Message = [(None, '<b>Information</b>: Project has multi-component/flexible particles. This script only supports single-element particles.')]
-            print("result:", fedit(Message, title="Error message"))
+            print("Result:", fedit(Message, title="Error message"))
             return 
         
-    #checking project path and creating a new folder to save files    
+    # Checking project path and creating a new folder to save files    
     folder_name = PARTICLE_STL_FOLDER
     base_file_name, data_folder_path = get_project_filename_and_create_folder(project, folder_name)
 
-    #exporting particles stls
+    # Exporting particles stls
     stl_file_names, particle_reference_sizes = export_particles_stl(study, data_folder_path)
-    print(particle_reference_sizes)
+    #print(particle_reference_sizes)
 
-    #exporting geometry stls
+    # Exporting geometry stls
     geometry_collection = study.GetGeometryCollection()
     geometry_names = geometry_collection.GetGeometryNames()
     # Remove Inlet and User Processes from geometry list
@@ -321,7 +304,7 @@ def export_particles():
     ]
     geom_stl_file_names = export_geometry_stl(study, geometry__names_list, data_folder_path) 
 
-    # getting time array
+    # Getting time array
     time_array = timeset.GetValues()
 
     # AUTOFILL / TEST MODE 
@@ -338,13 +321,13 @@ def export_particles():
 
     time_step = result[0] - 1
     
-    # reading the particles' stl
+    # Reading the particles' stl
     particleSTLs = list()
     for i, file in enumerate(stl_file_names):
         stl = read_binary_stl(stl_file_names[i])
         particleSTLs.append(stl)
 
-    # reading the geometries's stl    
+    # Reading the geometries's stl    
     geomSTLs = list()
     for filename in geom_stl_file_names:
         stl = read_binary_stl(filename)
@@ -362,7 +345,7 @@ def export_particles():
         # Write header
         case_file.write(b'\0' * 80) 
 
-        # write a temporary number of triangles
+        # Write a temporary number of triangles
         number_of_triangles = 0
         case_file.write(struct.pack('I', number_of_triangles))
 
@@ -371,7 +354,6 @@ def export_particles():
             region_to_account = study.GetElement(selected_region_name)
             particles = region_to_account
 
-        Index = particles.GetGridFunction('Particle ID').GetArray(time_step=time_step)
         X = particles.GetGridFunction('Particle X-Coordinate').GetArray(time_step=time_step)
         Y = particles.GetGridFunction('Particle Y-Coordinate').GetArray(time_step=time_step)
         Z = particles.GetGridFunction('Particle Z-Coordinate').GetArray(time_step=time_step)
@@ -382,30 +364,28 @@ def export_particles():
         Size = particles.GetGridFunction('Particle Size').GetArray(time_step=time_step)      
         Particle_name = particles.GetGridFunction('Particle Group').GetArray(time_step=time_step)
 
-        text = []
         particles_total = float(particles.GetNumberOfParticles(time_step=time_step))
         last_update = time.time()
         for i, p in enumerate(particles.IterParticles(time_step=time_step)):
-            #finding the particle rotation matrix
+            # Finding the particle rotation matrix
             particle_rotation_matrix = rotation_matrix([OrientationX[i], OrientationY[i], OrientationZ[i]], OrientationAngle[i])
-            #getting the correspondent particle vertex and normals
+            # Getting the correspondent particle vertex and normals
             normal = particleSTLs[Particle_name[i]][0]
             vertex1 = particleSTLs[Particle_name[i]][1]
             vertex2 = particleSTLs[Particle_name[i]][2]
             vertex3 = particleSTLs[Particle_name[i]][3]
             scale = Size[i]/particle_reference_sizes[Particle_name[i]]
-            print(scale)
 
-            #rotating the particle
+            # Rotating the particle
             rotated_normal, rotated_vertex1, rotated_vertex2, rotated_vertex3 = rotate_particle(normal, vertex1, vertex2, vertex3, particle_rotation_matrix)
-            #scaling the particle
+            # Scaling the particle
             scaled_normal, scaled_vertex1, scaled_vertex2, scaled_vertex3 = scale_particle(rotated_normal, rotated_vertex1, rotated_vertex2, rotated_vertex3, scale*result[1])
-            #translating the particle
+            # Translating the particle
             translated_normal, translated_vertex1, translated_vertex2, translated_vertex3 = position_particle(scaled_normal, scaled_vertex1, scaled_vertex2, scaled_vertex3, X[i], Y[i], Z[i])
 
             number_of_triangles += len(translated_normal)
 
-            #writing the triangles of that particle in the file
+            # Writing the partile's triangles in the file
             write_file(case_file, translated_normal, translated_vertex1, translated_vertex2, translated_vertex3, number_of_triangles)
 
             if time.time() - last_update >= 1.0:            
@@ -413,10 +393,7 @@ def export_particles():
                 ProcessEvents()
                 last_update = time.time()
 
-
-        # write the number of triangles        
-        print('Number of triangles:', number_of_triangles)
-        # skip header
+        # Skip header
         case_file.seek(80)
         case_file.write(struct.pack('I', number_of_triangles))
                         
